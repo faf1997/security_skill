@@ -29,8 +29,10 @@ python3 skills/public/agent-security-checklist/scripts/enforce_agent_security.py
 python3 skills/public/agent-security-checklist/scripts/agent_change_wrapper.py --config /home/node/.openclaw/openclaw.json
 ```
 
-- If validation PASS → wrapper restarts the gateway.
-- If WARN/FAIL → wrapper stops and does not restart.
+- If validation PASS (exit code **0**) → wrapper restarts the gateway.
+- If WARN (exit code **1**) or FAIL (exit code **2**) → wrapper stops and **does not restart**.
+
+Policy: **no warnings allowed** (WARN blocks restart the same as FAIL).
 
 ### Make it run “every time” (practical automation options)
 
@@ -61,7 +63,8 @@ Validator (`scripts/enforce_agent_security.py`):
 
 Wrapper (`scripts/agent_change_wrapper.py`):
 - Runs the validator
-- If PASS, restarts the gateway
-- If WARN/FAIL, it does **not** restart
+- If PASS (exit code **0**), restarts the gateway
+- If WARN (exit code **1**) or FAIL (exit code **2**), it does **not** restart
+- Wrapper exits with the same code as the validator when it does not restart
 
 Output is human-readable and designed to be used in CI.
