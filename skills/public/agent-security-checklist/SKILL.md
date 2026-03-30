@@ -17,13 +17,20 @@ This skill provides:
 
 After *any* agent change (new agent, tools/profile changes, messaging bindings, elevated, exec permissions):
 
-1) Run:
+1) Run validator (quick):
 
 ```bash
 python3 skills/public/agent-security-checklist/scripts/enforce_agent_security.py --config /home/node/.openclaw/openclaw.json
 ```
 
-2) If it reports failures, fix config and re-run until clean.
+2) Or run the wrapper (recommended for day-to-day changes):
+
+```bash
+python3 skills/public/agent-security-checklist/scripts/agent_change_wrapper.py --config /home/node/.openclaw/openclaw.json
+```
+
+- If validation PASS → wrapper restarts the gateway.
+- If WARN/FAIL → wrapper stops and does not restart.
 
 ### Make it run “every time” (practical automation options)
 
@@ -47,8 +54,14 @@ Read the canonical checklist:
 
 ## Script behavior
 
+Validator (`scripts/enforce_agent_security.py`):
 - Exits **0** on pass
 - Exits **2** on hard failures
 - Exits **1** on warnings-only
+
+Wrapper (`scripts/agent_change_wrapper.py`):
+- Runs the validator
+- If PASS, restarts the gateway
+- If WARN/FAIL, it does **not** restart
 
 Output is human-readable and designed to be used in CI.
